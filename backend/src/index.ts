@@ -7,6 +7,10 @@ app.get('/', (c) => {
   return c.text('Hello Hono!')
 })
 
+app.get('/me/list', (c) => {
+  return c.text('Hello Hono!')
+})
+
 serve({
   fetch: app.fetch,
   port: 8080
