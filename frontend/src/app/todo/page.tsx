@@ -1,38 +1,120 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "../../../component/navBar";
 
-// Define Todo type
+// Define Todo type to match your backend schema
 type Todo = {
   id: number;
-  text: string;
+  task: string;
   completed: boolean;
+  created_at: string;
+  updated_at: string;
 };
 
 export default function ToDo() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const addTodo = () => {
+  // Fetch todos on component mount
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:8080/get/todos');
+        
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setTodos(data);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch todos:', err);
+        setError('Failed to load tasks. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTodos();
+  }, []);
+
+  const addTodo = async () => {
     if (newTodo.trim() !== "") {
-      setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
-      setNewTodo("");
-      setIsModalOpen(false);
+      try {
+        const response = await fetch('http://localhost:8080/create/todo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ task: newTodo }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const newTodoFromServer = await response.json();
+        setTodos([...todos, newTodoFromServer]);
+        setNewTodo("");
+        setIsModalOpen(false);
+      } catch (err) {
+        console.error('Failed to add todo:', err);
+        setError('Failed to add task. Please try again.');
+      }
     }
   };
 
-  const toggleComplete = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  const toggleComplete = async (id: number) => {
+    try {
+      const response = await fetch('http://localhost:8080/update/task_status', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const updatedTodo = await response.json();
+      setTodos(
+        todos.map((todo) =>
+          todo.id === id ? updatedTodo : todo
+        )
+      );
+    } catch (err) {
+      console.error('Failed to update todo:', err);
+      setError('Failed to update task status. Please try again.');
+    }
   };
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const deleteTodo = async (id: number) => {
+    try {
+      const response = await fetch('http://localhost:8080/delete/todo', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ task_id: id }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      setTodos(todos.filter((todo) => todo.id !== id));
+    } catch (err) {
+      console.error('Failed to delete todo:', err);
+      setError('Failed to delete task. Please try again.');
+    }
   };
 
   return (
@@ -53,8 +135,18 @@ export default function ToDo() {
           </button>
         </div>
 
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          {todos.length === 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+            </div>
+          ) : todos.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -79,7 +171,7 @@ export default function ToDo() {
                       className="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <span className={`ml-4 text-lg ${todo.completed ? 'line-through text-gray-400' : 'text-gray-700'}`}>
-                      {todo.text}
+                      {todo.task}
                     </span>
                   </div>
                   <button
@@ -97,7 +189,7 @@ export default function ToDo() {
         </div>
         
         {/* Progress Summary */}
-        {todos.length > 0 && (
+        {!isLoading && todos.length > 0 && (
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Progress</h2>
             <div className="mb-4">

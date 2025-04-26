@@ -1,9 +1,19 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 const app = new Hono()
+
+app.use('/*', cors({
+  origin: ['http://localhost:3000'], // Add your Next.js origin here
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+  exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
+  maxAge: 600,
+  credentials: true
+}))
 
 app.get('/', (c) => {
   return c.text('Hello Hono!')
@@ -76,8 +86,6 @@ app.delete('/delete/todo', async (c) => {
     return c.json({ error: `Failed to delete todo with id ${task_id}` }, 500)
   }
 })
-
-
 
 serve({
   fetch: app.fetch,
