@@ -1,17 +1,49 @@
-FROM node:18-alpine
+# Base image
+FROM node:lts-alpine3.17 AS base
 
-USER node
-WORKDIR /home/node
+# Builder stage
+FROM base AS builder
 
-# Copy package files first to leverage Docker caching
-COPY --chown=node:node package*.json ./
+# Install glibc compatibility
+RUN apk add --no-cache gcompat
+
+WORKDIR /app
+
+# Copy dependency files and install
+COPY package.json package-lock.json ./
 RUN npm ci
 
-# Then copy the rest of the application code
-COPY --chown=node:node . .
+# Copy the rest of the files needed for build and Prisma
+COPY prisma ./prisma
+COPY tsconfig.json ./
+COPY src ./src
 
-ARG PORT
-ENV PORT=${PORT:-8080}
-EXPOSE ${PORT:-8080}
+# Generate Prisma client & build app
+RUN npx prisma generate
+RUN npm run build
 
-CMD ["npm", "run", "start"]
+# Prune dev dependencies
+RUN npm prune --production
+
+# Final runtime image
+FROM base AS runner
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 hono
+
+# Copy production deps and built code
+COPY --from=builder --chown=hono:nodejs /app/node_modules /app/node_modules
+COPY --from=builder --chown=hono:nodejs /app/dist /app/dist
+COPY --from=builder --chown=hono:nodejs /app/package.json /app/package.json
+COPY --from=builder --chown=hono:nodejs /app/prisma /app/prisma
+
+# Use non-root user
+USER hono
+
+# Expose the port your app uses
+EXPOSE 8080
+
+# Deploy DB schema then run the app
+CMD ["sh", "-c", "npx prisma migrate deploy && node /app/dist/index.js"]
