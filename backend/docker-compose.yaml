@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    container_name: hono_backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - frontend
+    command: ["node", "dist/index.js"] # or your actual start command
+
+  # frontend:
+  #   build: ./frontend
+  #   container_name: nextjs_frontend
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NEXT_PUBLIC_API_URL=http://localhost:8787
+  #   command: ["npm", "run", "dev"] 
