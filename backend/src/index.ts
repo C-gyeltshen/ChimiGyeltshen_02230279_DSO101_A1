@@ -2,6 +2,8 @@ import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import 'dotenv/config'
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
 
 const app = new Hono()
