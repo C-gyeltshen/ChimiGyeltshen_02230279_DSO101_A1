@@ -221,17 +221,45 @@ CMD ["npm", "run", "dev"]
 ```
 - This Dockerfile sets up a Node.js environment, installs dependencies, copies the application code, generates the Prisma client, exposes port 8080, and starts the application.
 
-- Bilding the Docker image for the backend:
-    ```bash
-    docker build -t gyeltshen23/be-todo:02230279 .
-    ```
-    ![2](./image/2.png)
+### **Step2: Bilding the Docker image for the backend:**
+```bash
+docker build -t gyeltshen23/be-todo:02230279 .
+```
+![2](./image/3.png)
+![4](./image/4.png)
 
-- Push the Docker image to Docker Hub:
-    ```bash
-    docker push gyeltshen23/be-todo:02230279
-    ```
-    ![]
+### **Step3: Push the Docker image to Docker Hub:**
+```bash
+docker push gyeltshen23/be-todo:02230279
+```
+![5](./image/5.png)
+
+### **Step 4: Deploy the existing Docker image to Render**
+
+#### **Error : The provided image URL points to an image with an invalid platform. Images must be built with the platform linux/amd64.**
+- I am using a MacBook with Apple Silicon (M1 chip), which uses the `linux/arm64` architecture by default. To resolve this, I need to build the Docker image for the `linux/amd64` platform.
+
+    ![6](./image/6.png)
+
+### **Step 5: Build the Docker image for the backend with the `linux/amd64` platform**
+```bash
+docker build --platform linux/amd64 -t gyeltshen23/be-todo:02230279 .
+```
+```bash
+docker push gyeltshen23/be-todo:02230279
+```
+![7](./image/7.png)
+
+### **Step 6: Deploy the Docker image to Render**
+
+- Go to the Render dashboard and click on "New" > "Web Service".
+- Select "Docker" as the deployment method.
+- In the "Docker Image" field, enter the image URL: `gyeltshen23/be-todo:02230279`.
+- Set environment variable : 
+    ![8](./image/8.png)
+- Set the "Instance Type" to "Starter".
+- Click on "Create Web Service" to deploy the backend service.
+    ![9](./image/9.png)
 
 
 
