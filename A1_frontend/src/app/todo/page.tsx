@@ -24,7 +24,7 @@ export default function ToDo() {
     const fetchTodos = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('http://localhost:8080/get/todos');
+        const response = await fetch('https://be-todo-02230279.onrender.com/get/todos');
         
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -47,7 +47,7 @@ export default function ToDo() {
   const addTodo = async () => {
     if (newTodo.trim() !== "") {
       try {
-        const response = await fetch('http://localhost:8080/create/todo', {
+        const response = await fetch('https://be-todo-02230279.onrender.com/create/todo', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export default function ToDo() {
 
   const toggleComplete = async (id: number) => {
     try {
-      const response = await fetch('http://localhost:8080/update/task_status', {
+      const response = await fetch('https://be-todo-02230279.onrender.com/update/task_status', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export default function ToDo() {
 
   const deleteTodo = async (id: number) => {
     try {
-      const response = await fetch('http://localhost:8080/delete/todo', {
+      const response = await fetch('https://be-todo-02230279.onrender.com/delete/todo', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

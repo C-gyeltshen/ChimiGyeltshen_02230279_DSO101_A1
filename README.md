@@ -201,6 +201,8 @@ npx tailwindcss init -p
 
 ## **Part A: Deploying a pre-built docker image to docker hub registry.**
 
+## Deploy Backend to Render
+
 ### **Step 1: Create Dockerfile for Backend**
 
 ```bash
@@ -261,5 +263,109 @@ docker push gyeltshen23/be-todo:02230279
 - Click on "Create Web Service" to deploy the backend service.
     ![9](./image/9.png)
 
+#### [Backend URl](https://be-todo-02230279.onrender.com)
 
+
+### * Change all the fetch API URL in the `page.tsx` file to point to the Render backend URL.
+```typescript
+const response = await fetch('https://be-todo-02230279.onrender.com/todos');
+```
+![10](./image/10.png)
+
+![11](./image/11.png)
+
+
+## Deploy Frontend to Render
+### **Step 1: Create Dockerfile for Frontend**
+
+```bash
+cd A1_Frontend
+```
+```bash
+touch Dockerfile
+```
+```dockerfile
+# frontend/Dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+```
+
+### **Step 2: Build the Docker image for the frontend**
+```bash
+docker build -t gyeltshen23/fe-todo:02230279 .
+```
+![12](./image/12.png)
+![13](./image/13.png)
+
+#### **Step 3: Push the Docker image to Docker Hub**
+```bash
+docker push gyeltshen23/fe-todo:02230279
+```
+![14](./image/14.png)
+### **Step 4: Deploy the Docker image to Render**
+- Go to the Render dashboard and click on "New" > "Web Service".
+- Select "Docker" as the deployment method.
+- In the "Docker Image" field, enter the image URL: `gyeltshen23/fe-todo:02230279`.
+
+### Error: The provided image URL points to an image with an invalid platform. Images must be built with the platform linux/amd64.
+- I am using a MacBook with Apple Silicon (M1 chip), which uses the `linux/arm64` architecture by default. To resolve this, I need to build the Docker image for the `linux/amd64` platform.
+### **Step 5: Build the Docker image for the frontend with the `linux/amd64` platform**
+```bash
+docker build --platform linux/amd64 -t gyeltshen23/fe-todo:02230279 .
+```
+![15](./image/15.png)
+
+#### **Step 6: Push the Docker image to Docker Hub**
+```bash
+docker push gyeltshen23/fe-todo:02230279
+```
+![16](./image/16.png)
+### **Step 7: Deploy the Docker image to Render**
+- Go to the Render dashboard and click on "New" > "Web Service".
+- Select "Docker" as the deployment method.
+- In the "Docker Image" field, enter the image URL: `gyeltshen23/fe-todo:02230279`.
+- Deploy : 
+
+#### **Error : Out of memory (used over 512Mi)**
+![17](./image/17.png)
+- The error indicates that the Render service is running out of memory. 
+
+### ***Solution: Use next `start` instead of `next dev`***
+
+- Update the `Dockerfile` to use `next start` instead of `next dev` for production builds.
+
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+- Rebuild and push the Docker image to Docker Hub:
+```bash
+docker build --platform linux/amd64 -t gyeltshen23/fe-todo:02230279 .
+```
+![18](./image/18.png)
+```bash
+docker push gyeltshen23/fe-todo:02230279
+```
+![19](./image/19.png)
+- Deploy the Docker image to Render again.
+- Go to the Render dashboard and click on "New" > "Web Service".
+- In the "Docker Image" field, enter the image URL: `gyeltshen23/fe-todo:02230279`.
+- Set the environment variable for the backend URL:
+    ![20](./image/20.png)
+- Set the "Instance Type" to "Starter".
+- Click on "Create Web Service" to deploy the frontend service.
+![21](./image/21.png)
+#### [Frontend URl](https://fe-todo-02230279-3.onrender.com)
 
