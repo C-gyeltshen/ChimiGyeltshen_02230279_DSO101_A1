@@ -134,7 +134,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/chimigyeltshen/Desktop/Sem4/DSO/ChimiGyeltshen_02230279_DSO101_A1/backend/generated/prisma_client",
+      "value": "/Users/chimigyeltshen/Desktop/Sem4/DSO/ChimiGyeltshen_02230279_DSO101_A1/A1_backend/generated/prisma_client",
       "fromEnvVar": null
     },
     "config": {
