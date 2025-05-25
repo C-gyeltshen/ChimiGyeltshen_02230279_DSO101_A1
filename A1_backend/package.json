@@ -5,6 +5,7 @@
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
     "build": "tsc",
+    "postinstall": "prisma generate",
     "db:deploy": "npx prisma migrate deploy && npx prisma generate"
   },
   "dependencies": {

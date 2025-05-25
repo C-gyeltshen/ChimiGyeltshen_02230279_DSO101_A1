@@ -67,11 +67,11 @@ todo-app/
 #### Steps 1. Install Hnon
 
 ```bash
-npm create hono@latest my-app
+npm create hono@latest A1_Backend
 ```
 
 ```bash
-cd my-app
+cd A1_Backend
 ```
 - Under src/index.ts change the port number from 300 to 8080.
 
@@ -169,7 +169,7 @@ const prisma = new PrismaClient()
 
 #### Steps 1. Install Next.js
 ```bash
-npx create-next-app@latest my-next-app
+npx create-next-app@latest A1_Frontend
 ```
 ```bash
 cd my-next-app
@@ -197,5 +197,41 @@ npx tailwindcss init -p
 #### Step 4. Using fetch API to connect the frontend with the backend.
 
 - In the `page.tsx` file, you can use the `fetch` API to connect to your backend server.
+
+
+## **Part A: Deploying a pre-built docker image to docker hub registry.**
+
+### **Step 1: Create Dockerfile for Backend**
+
+```bash
+cd A1_Backend
+```
+```bash
+touch Dockerfile
+```
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npx prisma generate
+EXPOSE 8080
+CMD ["npm", "run", "dev"]
+```
+- This Dockerfile sets up a Node.js environment, installs dependencies, copies the application code, generates the Prisma client, exposes port 8080, and starts the application.
+
+- Bilding the Docker image for the backend:
+    ```bash
+    docker build -t gyeltshen23/be-todo:02230279 .
+    ```
+    ![2](./image/2.png)
+
+- Push the Docker image to Docker Hub:
+    ```bash
+    docker push gyeltshen23/be-todo:02230279
+    ```
+    ![]
+
 
 
