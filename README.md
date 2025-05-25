@@ -58,7 +58,7 @@ todo-app/
 
 ## Step 0: Build the Application Locally 
 
-### **Backend** 
+## **Setup Backend** 
 
 #### **Prerequisites**
 - Node.js and npm installed
@@ -165,7 +165,7 @@ const prisma = new PrismaClient()
 
 - You can now use the Prisma client to interact with your PostgreSQL database. 
 
-### **Frontend**
+## **Setup Frontend**
 
 #### Steps 1. Install Next.js
 ```bash
