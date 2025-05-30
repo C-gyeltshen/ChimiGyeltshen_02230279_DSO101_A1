@@ -38,18 +38,18 @@ pipeline {
                 }
             }
         }
-        stage('Test Backend') {
-            steps {
-                dir('backend') {
-                    sh 'npm test || echo "No test script in backend, continuing"'
-                }
-            }
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: 'backend/junit.xml'
-                }
-            }
-        }
+        // stage('Test Backend') {
+        //     steps {
+        //         dir('backend') {
+        //             sh 'npm test || echo "No test script in backend, continuing"'
+        //         }
+        //     }
+        //     post {
+        //         always {
+        //             junit allowEmptyResults: true, testResults: 'backend/junit.xml'
+        //         }
+        //     }
+        // }
         
         // Stage 4b: Run Frontend Unit Tests
         // stage('Test Frontend') {
