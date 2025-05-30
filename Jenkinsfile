@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     sh 'export PATH=$PATH:/usr/local/bin && docker build -t gyeltshen23/node-app:latest -f backend/Dockerfile backend/'
-                    withCredentials([string(credentialsId: 'meopen123', variable: 'DOCKER_PWD')]) {
+                    withCredentials([string(credentialsId: 'docker-hub-creds', variable: 'DOCKER_PWD')]) {
                         sh 'echo $DOCKER_PWD | docker login -u gyeltshen23 --password-stdin'
                         sh 'docker push gyeltshen23/node-app:latest'
                     }
