@@ -49,26 +49,6 @@ pipeline {
                             sh 'docker push gyeltshen23/node-app:latest'
                         }
                     }
-                    
-                    // Alternative Method 2: Using full paths
-                    // sh '/usr/local/bin/docker build -t gyeltshen23/node-app:latest -f backend/Dockerfile backend/'
-                    // withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'DOCKER_PWD', usernameVariable: 'DOCKER_USER')]) {
-                    //     sh 'echo $DOCKER_PWD | /usr/local/bin/docker login -u $DOCKER_USER --password-stdin'
-                    //     sh '/usr/local/bin/docker push gyeltshen23/node-app:latest'
-                    // }
-                    
-                    // Alternative Method 3: Single command with PATH
-                    // sh '''
-                    //     export PATH=$PATH:/usr/local/bin
-                    //     docker build -t gyeltshen23/node-app:latest -f backend/Dockerfile backend/
-                    // '''
-                    // withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'DOCKER_PWD', usernameVariable: 'DOCKER_USER')]) {
-                    //     sh '''
-                    //         export PATH=$PATH:/usr/local/bin
-                    //         echo $DOCKER_PWD | docker login -u $DOCKER_USER --password-stdin
-                    //         docker push gyeltshen23/node-app:latest
-                    //     '''
-                    // }
                 }
             }
         }
