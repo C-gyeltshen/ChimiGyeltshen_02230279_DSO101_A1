@@ -1,6 +1,5 @@
 # To-Do List Web Application – CI/CD Assignment (DSO101 A1)
 
-
 ## 📘 Assignment Details
 
 - **Course**: Continuous Integration and Continuous Deployment (DSO101)  
