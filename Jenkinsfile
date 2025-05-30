@@ -41,11 +41,11 @@ pipeline {
         stage('Deploy Backend Image') {
             steps {
                 script {
-                    // Method 1: Using withEnv (Recommended)
+                    // Using Secret text credential
                     withEnv(["PATH+DOCKER=/usr/local/bin"]) {
                         sh 'docker build -t gyeltshen23/node-app:latest -f backend/Dockerfile backend/'
-                        withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'DOCKER_PWD', usernameVariable: 'DOCKER_USER')]) {
-                            sh 'echo $DOCKER_PWD | docker login -u $DOCKER_USER --password-stdin'
+                        withCredentials([string(credentialsId: 'docker-hub-creds', variable: 'DOCKER_PWD')]) {
+                            sh 'echo $DOCKER_PWD | docker login -u gyeltshen23 --password-stdin'
                             sh 'docker push gyeltshen23/node-app:latest'
                         }
                     }
@@ -77,8 +77,8 @@ pipeline {
                 script {
                     withEnv(["PATH+DOCKER=/usr/local/bin"]) {
                         sh 'docker build -t gyeltshen23/frontend-app:latest -f frontend/Dockerfile frontend/'
-                        withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'DOCKER_PWD', usernameVariable: 'DOCKER_USER')]) {
-                            sh 'echo $DOCKER_PWD | docker login -u $DOCKER_USER --password-stdin'
+                        withCredentials([string(credentialsId: 'docker-hub-creds', variable: 'DOCKER_PWD')]) {
+                            sh 'echo $DOCKER_PWD | docker login -u gyeltshen23 --password-stdin'
                             sh 'docker push gyeltshen23/frontend-app:latest'
                         }
                     }
