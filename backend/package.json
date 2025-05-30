@@ -6,8 +6,7 @@
     "start": "tsx src/index.ts",
     "build": "tsc",
     "postinstall": "prisma generate",
-    "db:deploy": "npx prisma migrate deploy && npx prisma generate",
-    "test": "jest --ci --reporters=default --reporters=jest-junit"
+    "db:deploy": "npx prisma migrate deploy && npx prisma generate"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
