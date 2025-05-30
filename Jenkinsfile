@@ -1,52 +1,58 @@
 pipeline {
-  agent any
-  tools {
-    nodejs 'NodeJS'
-  }
+	agent any
+	tools {
+    	nodejs 'NodeJS'
+	}
 
-  stages {
-    stage('Checkout') {
-      steps {
-        git branch: 'main', url: 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
-      }
-    }
+	stages {
+    	// Stage 1: Checkout Code
+    	stage('Checkout') {
+        	steps {
+            	git branch: 'main',
+            	Url: 'https://github.com/C-gyeltshen/ChimiGyeltshen_02230279_DSO101_A1.git'
+        	}
+    	}
 
-    stage('Install Frontend Dependencies') {
-      steps {
-        dir('A1_frontend') {
-          sh 'npm install'
-        }
-      }
-    }
+    	// Stage 2: Install Dependencies
+    	stage('Install') {
+        	steps {
+            	sh 'npm install' 
+        	}
+    	}
 
-    stage('Install Backend Dependencies') {
-      steps {
-        dir('A1_backend') {
-          sh 'npm install'
-        }
-      }
-    }
+    	// Stage 3: Build (if applicable, e.g., for React/TypeScript)
+    	stage('Build') {
+        	steps {
+            	sh 'npm run build' 
+        	}
+    	}
 
-    stage('Build Frontend') {
-      steps {
-        dir('A1_frontend') {
-          sh 'npm run build'
-        }
-      }
-    }
+    	// Stage 4: Run Unit Tests
+    	stage('Test') {
+        	steps {
+            	sh 'npm test'  // Runs "test" script (Jest/Mocha)
+        	}
+        	post {
+            	always {
+                	junit 'junit.xml'  // Publish test results
+            	}
+        	}
+    	}
 
-    stage('Test Backend') {
-      steps {
-        dir('A1_backend') {
-          sh 'npm test || true'  // use `|| true` if no tests are set up yet
-        }
-      }
-    }
-
-    stage('Deploy (Render)') {
-      steps {
-        echo 'Deployment handled by Render on Git push.'
-      }
-    }
-  }
+    	// Stage 5: Deploy (Docker Example)
+    	stage('Deploy') {
+        	steps {
+            	script {
+                	// Build Docker image
+                	docker.build('gyeltshen23/node-app:latest')
+               	 
+                	// Push to Docker Hub (requires credentials)
+                	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-creds') {
+                    	docker.image('gyeltshen23/node-app:latest').push()
+                	}
+            	}
+        	}
+    	}
+	}
 }
+
